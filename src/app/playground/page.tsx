@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
@@ -8,6 +8,8 @@ import Toolbar from '@/components/layout/Toolbar';
 import StatusBar from '@/components/layout/StatusBar';
 import Sidebar from '@/components/layout/Sidebar';
 import OutputPanel from '@/components/layout/OutputPanel';
+import { DeploymentWizard, OnChainVerifier } from '@/components/deployment';
+import { ShareDialog } from '@/components/sharing';
 import { useEditorStore } from '@/stores/editorStore';
 import { useCompilerStore } from '@/stores/compilerStore';
 import { useProverStore } from '@/stores/proverStore';
@@ -28,6 +30,9 @@ const NoirEditor = dynamic(() => import('@/components/editor/NoirEditor'), {
 
 export default function PlaygroundPage() {
   const [cursorPosition, setCursorPosition] = useState({ line: 1, column: 1 });
+  const [deploymentOpen, setDeploymentOpen] = useState(false);
+  const [verifierOpen, setVerifierOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const { code, setCode, theme, sidebarOpen } = useEditorStore();
   const {
     errors,
@@ -128,14 +133,17 @@ export default function PlaygroundPage() {
 
   // Handle deploy action
   const handleDeploy = useCallback(() => {
-    // TODO: Implement deployment wizard
-    console.log('Deploy clicked');
+    setDeploymentOpen(true);
+  }, []);
+
+  // Handle verify on-chain action
+  const handleVerifyOnChain = useCallback(() => {
+    setVerifierOpen(true);
   }, []);
 
   // Handle share action
   const handleShare = useCallback(() => {
-    // TODO: Implement share dialog
-    console.log('Share clicked');
+    setShareOpen(true);
   }, []);
 
   // Handle template selection
@@ -187,6 +195,24 @@ export default function PlaygroundPage() {
 
       {/* Status bar */}
       <StatusBar cursorPosition={cursorPosition} />
+
+      {/* Deployment Wizard Dialog */}
+      <DeploymentWizard
+        open={deploymentOpen}
+        onOpenChange={setDeploymentOpen}
+      />
+
+      {/* On-Chain Verifier Dialog */}
+      <OnChainVerifier
+        open={verifierOpen}
+        onOpenChange={setVerifierOpen}
+      />
+
+      {/* Share Dialog */}
+      <ShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+      />
     </div>
   );
 }
